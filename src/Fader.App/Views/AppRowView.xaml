@@ -1,0 +1,164 @@
+<UserControl x:Class="Fader.App.Views.AppRowView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:Fader.App.Controls"
+             Focusable="False">
+
+    <UserControl.ContextMenu>
+        <ContextMenu />
+    </UserControl.ContextMenu>
+
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="MouseEnter">
+            <BeginStoryboard>
+                <Storyboard><DoubleAnimation Storyboard.TargetName="HoverBg" Storyboard.TargetProperty="Opacity" To="0.7" Duration="0:0:0.12" /></Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+        <EventTrigger RoutedEvent="MouseLeave">
+            <BeginStoryboard>
+                <Storyboard><DoubleAnimation Storyboard.TargetName="HoverBg" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.12" /></Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </UserControl.Triggers>
+
+    <UserControl.Resources>
+        <!-- Pin control stays out of sight until it means something: pinned, hovered, or focused by keyboard. -->
+        <Style x:Key="PinReveal" TargetType="ToggleButton" BasedOn="{StaticResource PinToggle}">
+            <Setter Property="Opacity" Value="0" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsPinned}" Value="True">
+                    <Setter Property="Opacity" Value="1" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True">
+                    <Setter Property="Opacity" Value="1" />
+                </DataTrigger>
+                <Trigger Property="IsKeyboardFocused" Value="True">
+                    <Setter Property="Opacity" Value="1" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Real executable icon when one loads; a generic audio glyph otherwise. -->
+        <DataTemplate x:Key="AppIcon">
+            <Grid Width="30" Height="30">
+                <Image Source="{Binding Icon}" RenderOptions.BitmapScalingMode="HighQuality" Stretch="Uniform" />
+                <TextBlock Text="&#xE8D6;" FontFamily="{StaticResource Font.Icons}" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           Foreground="{DynamicResource Brush.TextTertiary}">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HasIcon}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Grid>
+        </DataTemplate>
+
+        <Style x:Key="DetailText" TargetType="TextBlock" BasedOn="{StaticResource Text.Tertiary}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Two lines: name and state above, slider with its meter below. Works down to the minimum window width. -->
+        <DataTemplate x:Key="Comfortable">
+            <Grid Margin="14,10,8,10" Background="Transparent">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <ContentControl Grid.RowSpan="2" Content="{Binding}" ContentTemplate="{StaticResource AppIcon}" Focusable="False"
+                                VerticalAlignment="Top" Margin="0,2,12,0" />
+
+                <StackPanel Grid.Column="1">
+                    <DockPanel LastChildFill="True">
+                        <ToggleButton DockPanel.Dock="Right" Style="{StaticResource PinReveal}" IsChecked="{Binding IsPinned, Mode=OneWay}"
+                                      Command="{Binding TogglePinCommand}" ToolTip="{Binding PinTip}" Margin="4,0,0,0"
+                                      AutomationProperties.Name="Pin to list" />
+                        <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" FontSize="14" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                    </DockPanel>
+                    <TextBlock Text="{Binding Detail}" Style="{StaticResource DetailText}" TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+
+                <TextBlock Grid.Column="2" Text="{Binding PercentText}" Style="{StaticResource Text.Value}" FontSize="14" MinWidth="46"
+                           VerticalAlignment="Top" Margin="8,3,6,0" />
+
+                <ToggleButton Grid.Column="3" Grid.RowSpan="2" Style="{StaticResource MuteToggle}" VerticalAlignment="Center"
+                              IsChecked="{Binding IsMuted, Mode=OneWay}" Command="{Binding ToggleMuteCommand}"
+                              ToolTip="Mute or unmute this app" AutomationProperties.Name="Mute" />
+
+                <StackPanel Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,2,6,0">
+                    <Slider Style="{StaticResource FaderSlider}" Value="{Binding VolumePercent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            IsEnabled="{Binding IsRunning}" AutomationProperties.Name="{Binding DisplayName, StringFormat='{}{0} volume'}" />
+                    <c:MeterBar Height="3" Margin="0,-1,0,0" Value="{Binding Meter}" Track="{DynamicResource Brush.MeterTrack}"
+                                Fill="{DynamicResource Brush.Meter}" HotFill="{DynamicResource Brush.MeterHot}" />
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+
+        <!-- One line: icon, name, slider, level, mute. -->
+        <DataTemplate x:Key="Compact">
+            <Grid Margin="12,6,6,6" Background="Transparent" ToolTip="{Binding Detail}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="112" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource AppIcon}" Focusable="False" Margin="0,0,10,0" VerticalAlignment="Center" />
+                <DockPanel Grid.Column="1" LastChildFill="True" VerticalAlignment="Center">
+                    <ToggleButton DockPanel.Dock="Right" Style="{StaticResource PinReveal}" IsChecked="{Binding IsPinned, Mode=OneWay}"
+                                  Command="{Binding TogglePinCommand}" ToolTip="{Binding PinTip}" AutomationProperties.Name="Pin to list" Width="22" />
+                    <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                </DockPanel>
+                <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="4,0,0,0">
+                    <Slider Style="{StaticResource FaderSlider}" Value="{Binding VolumePercent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            IsEnabled="{Binding IsRunning}" AutomationProperties.Name="{Binding DisplayName, StringFormat='{}{0} volume'}" />
+                    <c:MeterBar Height="3" Margin="0,-1,0,0" Value="{Binding Meter}" Track="{DynamicResource Brush.MeterTrack}"
+                                Fill="{DynamicResource Brush.Meter}" HotFill="{DynamicResource Brush.MeterHot}" />
+                </StackPanel>
+                <TextBlock Grid.Column="3" Text="{Binding PercentText}" Style="{StaticResource Text.Value}" FontSize="13" MinWidth="42"
+                           VerticalAlignment="Center" Margin="6,0,2,0" />
+                <ToggleButton Grid.Column="4" Style="{StaticResource MuteToggle}" VerticalAlignment="Center"
+                              IsChecked="{Binding IsMuted, Mode=OneWay}" Command="{Binding ToggleMuteCommand}"
+                              ToolTip="Mute or unmute this app" AutomationProperties.Name="Mute" />
+            </Grid>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Border BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,0,1">
+        <Grid>
+            <Border x:Name="HoverBg" Background="{DynamicResource Brush.SurfaceHover}" Opacity="0" IsHitTestVisible="False" />
+            <ContentControl Content="{Binding}" Focusable="False">
+                <ContentControl.Style>
+                    <Style TargetType="ContentControl">
+                        <Setter Property="ContentTemplate" Value="{StaticResource Comfortable}" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Owner.CompactRows}" Value="True">
+                                <Setter Property="ContentTemplate" Value="{StaticResource Compact}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsNotRunning}" Value="True">
+                                <Setter Property="Opacity" Value="0.62" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ContentControl.Style>
+            </ContentControl>
+        </Grid>
+    </Border>
+</UserControl>

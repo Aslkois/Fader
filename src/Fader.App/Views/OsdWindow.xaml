@@ -1,0 +1,21 @@
+<Window x:Class="Fader.App.Views.OsdWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource FaderWindow}"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ShowInTaskbar="False" ShowActivated="False" Topmost="True" Focusable="False"
+        ResizeMode="NoResize" SizeToContent="WidthAndHeight">
+    <Border Margin="12" Padding="16,11" CornerRadius="8"
+            Background="{DynamicResource Brush.SurfaceRaised}"
+            BorderBrush="{DynamicResource Brush.BorderStrong}" BorderThickness="1">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="16" ShadowDepth="3" Direction="270" Opacity="0.4" Color="Black" />
+        </Border.Effect>
+        <StackPanel Orientation="Horizontal">
+            <TextBlock x:Name="Glyph" FontFamily="{StaticResource Font.Icons}" FontSize="16" VerticalAlignment="Center"
+                       Margin="0,1,10,0" Foreground="{DynamicResource Brush.TextSecondary}" />
+            <TextBlock x:Name="Message" FontFamily="{StaticResource Font.Display}" FontSize="15" FontWeight="SemiBold"
+                       VerticalAlignment="Center" Foreground="{DynamicResource Brush.Text}" MaxWidth="420" TextTrimming="CharacterEllipsis" />
+        </StackPanel>
+    </Border>
+</Window>
