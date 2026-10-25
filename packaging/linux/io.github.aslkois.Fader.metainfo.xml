@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.aslkois.Fader</id>
+  <name>FADER</name>
+  <summary>Per-application volume mixer with profiles and hotkeys</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <developer id="io.github.aslkois">
+    <name>FADER contributors</name>
+  </developer>
+  <description>
+    <p>
+      FADER sets the volume of each application separately, groups applications into profiles,
+      and switches the whole mix with one hotkey.
+    </p>
+    <ul>
+      <li>Per-application volume and mute with level meters</li>
+      <li>Profiles by category (games, chat, music, browsers, system) or by application</li>
+      <li>LOCK IN: apply a profile and put every level back when you turn it off</li>
+      <li>Chat controls and global hotkeys</li>
+    </ul>
+  </description>
+  <launchable type="desktop-id">io.github.aslkois.Fader.desktop</launchable>
+  <icon type="stock">fader</icon>
+  <url type="homepage">https://github.com/Aslkois/Fader</url>
+  <url type="bugtracker">https://github.com/Aslkois/Fader/issues</url>
+  <categories>
+    <category>AudioVideo</category>
+    <category>Audio</category>
+  </categories>
+  <content_rating type="oars-1.1" />
+  <releases>
+    <release version="@VERSION@" date="@DATE@" />
+  </releases>
+</component>

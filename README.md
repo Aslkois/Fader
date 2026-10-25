@@ -24,6 +24,16 @@ dotnet build Fader.sln
 dotnet run --project src/Fader.App
 ```
 
+## Release build
+
+To build a standalone `Fader.exe` (no .NET install needed) into `dist/windows/`:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File packaging\windows\build.ps1
+```
+
+See [packaging/README.md](packaging/README.md) for details, including the prepared Linux AppImage packaging.
+
 ## Tests
 
 ```powershell

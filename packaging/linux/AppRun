@@ -1,0 +1,4 @@
+#!/bin/sh
+# Entry point of the FADER AppImage. build-appimage.sh fills in the executable name.
+here="$(dirname "$(readlink -f "$0")")"
+exec "$here/usr/lib/fader/@EXE_NAME@" "$@"

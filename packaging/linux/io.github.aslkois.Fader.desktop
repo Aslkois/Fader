@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=FADER
+GenericName=Audio Mixer
+Comment=Per-application volume mixer with profiles and hotkeys
+Exec=fader
+Icon=fader
+Terminal=false
+Categories=AudioVideo;Audio;Mixer;
+Keywords=volume;mixer;audio;sound;profile;
